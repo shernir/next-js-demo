@@ -1,8 +1,17 @@
 import Head from 'next/head'
+import {useEffect, useState} from 'react'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import Link from 'next/link';
+import {Product} from '../interfaces/interface'
+import ProductCard from '../components/ProductCard/ProductCard';
+interface ComponentProps {
+  products:Product[]
+}
+export default function Home(props:ComponentProps) {
+  const [products, setproducts] = useState<Product[]>(props.products)
 
-export default function Home() {
+  
   return (
     <div className={styles.container}>
       <Head>
@@ -11,61 +20,33 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.tsx</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+      <main className="container">
+        <div className='row'>
+          <div className='col-sm-12'>
+            <h1>Product List</h1>
+          </div>
+        </div>
+        <div className='row'>
+         {props.products.map((p,i)=><div key={i} className='col-sm-4'>
+            <ProductCard product={p} />
+          </div>)} 
         </div>
       </main>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
     </div>
   )
+}
+
+
+export async function getStaticProps() {
+  // Get external data from the file system, API, DB, etc.
+  const data = await fetch('https://dummyjson.com/products').then(res => res.json())
+  
+  // The value of the `props` key will be
+  //  passed to the `Home` component
+  return {
+    props: {
+      products:data.products
+    }
+  }
 }
